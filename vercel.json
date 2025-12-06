@@ -1,0 +1,18 @@
+{
+    "builds": [
+        {
+            "src": "auravault/wsgi.py",
+            "use": "@vercel/python",
+            "config": {
+                "maxLambdaSize": "10mb",
+                "runtime": "python3.12"
+            }
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "auravault/wsgi.py"
+        }
+    ]
+}
