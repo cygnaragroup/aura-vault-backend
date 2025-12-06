@@ -78,7 +78,7 @@ jobs:
       - run:
           name: "Build Docker image"
           command: |
-            docker build -t "${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1}" .
+            docker build -t "${DOCKERHUB_USERNAME}/aura-vault-backend:${CIRCLE_SHA1}" .
 
       - run:
           name: "Login to Docker Hub (secure - password-stdin)"
@@ -89,9 +89,9 @@ jobs:
       - run:
           name: "Tag & Push Docker image"
           command: |
-            docker tag "${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1}" "${DOCKERHUB_USERNAME}/auravault-backend:latest"
-            docker push "${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1}"
-            docker push "${DOCKERHUB_USERNAME}/auravault-backend:latest"
+            docker tag "${DOCKERHUB_USERNAME}/aura-vault-backend:${CIRCLE_SHA1}" "${DOCKERHUB_USERNAME}/aura-vault-backend:latest"
+            docker push "${DOCKERHUB_USERNAME}/aura-vault-backend:${CIRCLE_SHA1}"
+            docker push "${DOCKERHUB_USERNAME}/aura-vault-backend:latest"
 
       - run:
           name: "Cleanup docker credentials"
