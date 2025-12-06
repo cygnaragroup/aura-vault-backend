@@ -5,38 +5,38 @@ jobs:
     docker:
       - image: cimg/python:3.10
         environment:
-          DJANGO_SETTINGS_MODULE: auravault.settings
+          DJANGO_SETTINGS_MODULE: "auravault.settings"
           # Dummy secret key for CI – configure a secure one in CircleCI if needed
           SECRET_KEY: "ci-test-secret-key"
           # Database settings aligned with auravault/settings.py defaults
-          POSTGRES_DB: auravault
-          POSTGRES_USER: auravault
-          POSTGRES_PASSWORD: auravault
-          POSTGRES_HOST: 127.0.0.1
-          POSTGRES_PORT: 5432
+          POSTGRES_DB: "auravault"
+          POSTGRES_USER: "auravault"
+          POSTGRES_PASSWORD: "auravault"
+          POSTGRES_HOST: "127.0.0.1"
+          POSTGRES_PORT: "5432"
       - image: cimg/postgres:16.4
         environment:
-          POSTGRES_DB: auravault
-          POSTGRES_USER: auravault
-          POSTGRES_PASSWORD: auravault
+          POSTGRES_DB: "auravault"
+          POSTGRES_USER: "auravault"
+          POSTGRES_PASSWORD: "auravault"
 
-    working_directory: ~/project
+    working_directory: "~/project"
 
     steps:
       - checkout
 
       - run:
-          name: Set up Python
+          name: "Set up Python"
           command: |
             python -m pip install --upgrade pip
 
       - run:
-          name: Install dependencies
+          name: "Install dependencies"
           command: |
             pip install -r requirements.txt
 
       - run:
-          name: Wait for Postgres
+          name: "Wait for Postgres"
           command: |
             for i in $(seq 1 30); do
               nc -z 127.0.0.1 5432 && echo "Postgres is up" && break
@@ -45,12 +45,12 @@ jobs:
             done
 
       - run:
-          name: Run migrations
+          name: "Run migrations"
           command: |
             python manage.py migrate --noinput
 
       - run:
-          name: Run tests
+          name: "Run tests"
           command: |
             python manage.py test
 
@@ -60,9 +60,9 @@ jobs:
 
     # Use a temp docker config dir (so credentials aren't left in home)
     environment:
-      DOCKER_CONFIG: /tmp/.docker
+      DOCKER_CONFIG: "/tmp/.docker"
 
-    working_directory: ~/project
+    working_directory: "~/project"
 
     steps:
       - checkout
@@ -71,30 +71,30 @@ jobs:
       - setup_remote_docker
 
       - run:
-          name: Prepare docker config dir
+          name: "Prepare docker config dir"
           command: |
             mkdir -p "$DOCKER_CONFIG"
 
       - run:
-          name: Build Docker image
+          name: "Build Docker image"
           command: |
-            docker build -t ${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1} .
+            docker build -t "${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1}" .
 
       - run:
-          name: Login to Docker Hub (secure: password-stdin)
+          name: "Login to Docker Hub (secure - password-stdin)"
           command: |
             # Use DOCKERHUB_PASSWORD (preferably a Docker Hub access token) stored in project settings
-            echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
 
       - run:
-          name: Tag & Push Docker image
+          name: "Tag & Push Docker image"
           command: |
-            docker tag ${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1} ${DOCKERHUB_USERNAME}/auravault-backend:latest
-            docker push ${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1}
-            docker push ${DOCKERHUB_USERNAME}/auravault-backend:latest
+            docker tag "${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1}" "${DOCKERHUB_USERNAME}/auravault-backend:latest"
+            docker push "${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1}"
+            docker push "${DOCKERHUB_USERNAME}/auravault-backend:latest"
 
       - run:
-          name: Cleanup docker credentials
+          name: "Cleanup docker credentials"
           command: |
             docker logout || true
             rm -rf "$DOCKER_CONFIG" || true
