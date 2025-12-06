@@ -58,12 +58,22 @@ jobs:
     docker:
       - image: cimg/base:stable
 
+    # Use a temp docker config dir (so credentials aren't left in home)
+    environment:
+      DOCKER_CONFIG: /tmp/.docker
+
     working_directory: ~/project
 
     steps:
       - checkout
 
+      # Required if you need the Docker daemon for build/push
       - setup_remote_docker
+
+      - run:
+          name: Prepare docker config dir
+          command: |
+            mkdir -p "$DOCKER_CONFIG"
 
       - run:
           name: Build Docker image
@@ -71,12 +81,23 @@ jobs:
             docker build -t ${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1} .
 
       - run:
-          name: Push Docker image to Docker Hub
+          name: Login to Docker Hub (secure: password-stdin)
           command: |
-            docker login -u "${DOCKERHUB_USERNAME}" -p "${DOCKERHUB_PASSWORD}"
+            # Use DOCKERHUB_PASSWORD (preferably a Docker Hub access token) stored in project settings
+            echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+
+      - run:
+          name: Tag & Push Docker image
+          command: |
             docker tag ${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1} ${DOCKERHUB_USERNAME}/auravault-backend:latest
             docker push ${DOCKERHUB_USERNAME}/auravault-backend:${CIRCLE_SHA1}
             docker push ${DOCKERHUB_USERNAME}/auravault-backend:latest
+
+      - run:
+          name: Cleanup docker credentials
+          command: |
+            docker logout || true
+            rm -rf "$DOCKER_CONFIG" || true
 
 workflows:
   ci:
@@ -85,5 +106,3 @@ workflows:
       - build_and_push
           # requires:
           #   - test
-
-
