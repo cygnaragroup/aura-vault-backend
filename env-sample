@@ -7,7 +7,7 @@ DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 
 # PostgreSQL
-POSTGRES_DB=auravault
+POSTGRES_DATABASE=auravault
 POSTGRES_USER=auravault
 POSTGRES_PASSWORD=your_db_password
 POSTGRES_HOST=localhost

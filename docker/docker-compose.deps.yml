@@ -9,7 +9,7 @@ services:
     environment:
       - POSTGRES_USER=auravault_user
       - POSTGRES_PASSWORD=auravault_pass
-      - POSTGRES_DB=auravault_db
+      - POSTGRES_DATABASE=auravault_db
     ports:
       - '5432:5432'
 

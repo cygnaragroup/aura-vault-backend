@@ -109,7 +109,7 @@ WSGI_APPLICATION = 'auravault.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'auravault'),
+        'NAME': os.environ.get('POSTGRES_DATABASE', 'auravault'),
         'USER': os.environ.get('POSTGRES_USER', 'auravault'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
         'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
