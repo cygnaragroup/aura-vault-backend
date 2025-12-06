@@ -25,6 +25,9 @@ jobs:
     steps:
       - checkout
 
+      - setup_remote_docker:
+          version: 20.10.18
+
       - run:
           name: Set up Python
           command: |
@@ -53,6 +56,11 @@ jobs:
           name: Run tests
           command: |
             python manage.py test
+
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t auravault-backend:${CIRCLE_SHA1} .
 
 workflows:
   test:
