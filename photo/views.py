@@ -2,6 +2,7 @@ from rest_framework import generics
 
 from .models import Photo
 from .serializers import PhotoSerializer
+from .tasks import process_uploaded_image
 
 
 class PhotoListCreateAPIView(generics.ListCreateAPIView):
@@ -17,4 +18,12 @@ class PhotoListCreateAPIView(generics.ListCreateAPIView):
 
     queryset = Photo.objects.order_by("-uploaded_at")
     serializer_class = PhotoSerializer
+
+    def perform_create(self, serializer):
+        """
+        Save the photo and trigger the Celery task for processing.
+        """
+        photo = serializer.save()
+        # Trigger the Celery task asynchronously
+        process_uploaded_image.delay(photo.id)
 

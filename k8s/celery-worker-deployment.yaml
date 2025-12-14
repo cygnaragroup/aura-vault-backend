@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+  namespace: auravault
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: celery-worker
+  template:
+    metadata:
+      labels:
+        app: celery-worker
+    spec:
+      containers:
+        - name: celery-worker
+          image: epsooraj/aura-vault-backend:latest
+          imagePullPolicy: Always
+          command: ["celery", "-A", "auravault", "worker", "--loglevel=info"]
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 1Gi
+          envFrom:
+            - secretRef:
+                name: auravault-secrets
+
