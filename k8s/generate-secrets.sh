@@ -46,9 +46,9 @@ while IFS= read -r line || [ -n "$line" ]; do
         fi
         
         # Skip DEBUG and ALLOWED_HOSTS as they're not needed in secrets
-        if [ "$key" = "DEBUG" ] || [ "$key" = "ALLOWED_HOSTS" ]; then
-            continue
-        fi
+        # if [ "$key" = "DEBUG" ] || [ "$key" = "ALLOWED_HOSTS" ]; then
+        #     continue
+        # fi
         
         # Write to YAML file with proper indentation
         echo "  $key: \"$value\"" >> "$OUTPUT_FILE"
