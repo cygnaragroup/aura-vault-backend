@@ -2,7 +2,7 @@ COMPOSE_DEPS_FILE=docker/docker-compose.deps.yml
 DC_DEPS=docker compose -f $(COMPOSE_DEPS_FILE)
 PYTHON=./venv/bin/python
 
-.PHONY: deps-up deps-down deps-logs deps-ps runserver
+.PHONY: deps-up deps-down deps-logs deps-ps runserver generate-secrets
 
 deps-up:
 	$(DC_DEPS) up -d
@@ -18,4 +18,7 @@ deps-ps:
 
 runserver:
 	$(PYTHON) manage.py runserver
+
+generate-secrets:
+	@k8s/generate-secrets.sh
 

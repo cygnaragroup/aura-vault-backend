@@ -33,15 +33,8 @@ ENV DJANGO_SETTINGS_MODULE=auravault.settings \
 # Collect static files (safe if STATIC_ROOT exists)
 RUN python manage.py collectstatic --noinput || true
 
-# Simple entrypoint to wait for DB then start Gunicorn
-CMD sh -c "if [ -n \"${POSTGRES_HOST}\" ]; then \
-             echo 'Waiting for database...' && \
-             for i in $(seq 1 30); do \
-               nc -z \"$POSTGRES_HOST\" \"${POSTGRES_PORT:-5432}\" && echo 'Database is up' && break; \
-               echo 'Waiting for Postgres...'; \
-               sleep 1; \
-             done; \
-           fi; \
-           gunicorn auravault.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+# Copy entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-
+ENTRYPOINT ["/entrypoint.sh"]
