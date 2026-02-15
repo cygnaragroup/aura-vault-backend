@@ -189,7 +189,7 @@ STORAGES = {
 AWS_S3_CUSTOM_DOMAIN = os.environ.get("AWS_S3_CUSTOM_DOMAIN")
 if AWS_STORAGE_BUCKET_NAME:
     if AWS_S3_CUSTOM_DOMAIN:
-        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
+        MEDIA_URL = AWS_S3_CUSTOM_DOMAIN
     else:
         MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/"
 else:
@@ -200,9 +200,13 @@ else:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
+REDIS_PORT = os.environ.get('REDIS_PORT', '6379')
+REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+
 # Celery Configuration
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://redis:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', REDIS_URL)
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', REDIS_URL)
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
