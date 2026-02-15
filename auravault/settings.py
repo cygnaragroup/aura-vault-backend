@@ -174,6 +174,7 @@ AWS_DEFAULT_ACL = None
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
+AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL')  # Optional, for S3-compatible services
 
 # Configure Django 5 STORAGES so default file storage is S3
 STORAGES = {
@@ -191,7 +192,10 @@ if AWS_STORAGE_BUCKET_NAME:
     if AWS_S3_CUSTOM_DOMAIN:
         MEDIA_URL = AWS_S3_CUSTOM_DOMAIN
     else:
-        MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/"
+        if AWS_S3_ENDPOINT_URL:
+            MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/"
+        else:
+            MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/"
 else:
     MEDIA_URL = "/media/"
 
